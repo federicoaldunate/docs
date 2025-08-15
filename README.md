@@ -1,44 +1,98 @@
-# Mintlify Starter Kit
+# **BlackLab — Rack Middleware WAF (Web Application Firewall)**
 
-Use the starter kit to get your docs deployed and ready to customize.
+BlackLab is a lightweight, extensible web application firewall designed as Rack middleware — perfect for protecting Rails and other Rack-based web applications. It blocks common attack vectors like SQL injection, XSS, path traversal, and more using modular plugins.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+## **Table of Contents**
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+- [<u>Motivation</u>](https://github.com/windmotion-io/black-lab#motivation)
+- [<u>Installation</u>](https://github.com/windmotion-io/black-lab#installation)
+- [<u>Usage</u>](https://github.com/windmotion-io/black-lab#usage)
+- [<u>Examples</u>](https://github.com/windmotion-io/black-lab#examples)
+- [<u>Contributions</u>](https://github.com/windmotion-io/black-lab#contributions)
+- [<u>License</u>](https://github.com/windmotion-io/black-lab#license)
+- [<u>Credits</u>](https://github.com/windmotion-io/black-lab#credits)
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+---
 
-## Development
+## **Motivation**
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+Imagine gaining partial unauthorized access to a web application, creating users without permission, probing with attack vectors, and being partially blocked by an existing WAF. But the existing WAF wasn’t tightly integrated with the Rails app, so my user might still be there, in their system. Why not just block the user, trigger an alarm, a Slack message or something?
+
+I built **BlackLab** to bridge that gap: a Rack-compatible WAF that integrates seamlessly with Rails and any Rack app, blocking attacks early with configurable plugins. It’s lightweight, extensible, and easy to configure.
+
+For the full story behind BlackLab’s creation, check out my [<u>blog post here</u>](https://github.com/windmotion-io/black-lab/blob/master/YOUR_BLOG_POST_LINK_HERE).
+
+---
+
+## **Installation**
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem "black_lab"
+```
+
+And then execute:
 
 ```
-npm i -g mint
+bundle install
 ```
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+## **Usage**
+
+In your [config.ru](http://config.ru) or Rails middleware stack, simply add:
+
+```ruby
+require "black_lab"
+
+use BlackLab::Middleware
+```
+
+Configure **BlackLab** via an initializer (e.g., config/initializers/black_lab.rb):
+
+```ruby
+BlackLab.configure do |config|
+  config.block_message = "Blocked by BlackLab WAF"
+  config.block_duration = 3600 # seconds to block an IP/user in cache
+  config.block_callback = ->(request) { puts "Blocked #{request.ip}" } # { User.find_by(ip: request.ip).block_forever!)}
+  config.callback_threshold = 15 # points threshold to trigger callback
+  config.cache_store = Rails.cache # or any object responding to #write/#read
+  config.plugins = [
+    BlackLab::Plugins::SqliPlugin.new(weight: 3),
+    BlackLab::Plugins::XssPlugin.new(weight: 3),
+    BlackLab::Plugins::PathTraversalPlugin.new(weight: 3),
+    #BlackLab::Plugins::LfiPlugin.new(weight: 1),
+    #BlackLab::Plugins::RfiPlugin.new(weight: 2)
+  ]
+end
+```
+
+## **Common Patterns we are blocking now**
+
+- SQL Injection Detection
+- Cross-Site Scripting (XSS) Detection
+- Path Traversal Detection
+- Remote File Inclusion (RFI) Detection
+- Local File Inclusion (LFI) Detection
+
+## **Benchmarks**
+
+BlackLab provides benchmarking scripts to measure the performance of individual plugins. You can run these benchmarks to ensure your WAF operates efficiently under load.
+
+To benchmark a plugin, navigate to the bench directory and run the appropriate Ruby script. For example, to benchmark the SQL Injection plugin:
 
 ```
-mint dev
+ruby benchmarks/sqli_plugin_benchmark.rb
 ```
 
-View your local preview at `http://localhost:3000`.
+## **Contributing**
 
-## Publishing changes
+Bug reports and pull requests are welcome on GitHub at [<u>https://github.com/windmotion-io/black_lab</u>](https://github.com/windmotion-io/black_lab). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [<u>code of conduct</u>](https://github.com/windmotion-io/black_lab/blob/master/CODE_OF_CONDUCT.md).
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+## **License**
 
-## Need help?
+The gem is available as open source under the terms of the [<u>MIT License</u>](https://opensource.org/licenses/MIT).
 
-### Troubleshooting
+## **Code of Conduct**
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
-
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
-- [Mintlify community](https://mintlify.com/community)
+Everyone interacting in the BlackLab project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [<u>code of conduct</u>](https://github.com/windmotion-io/black_lab/blob/master/CODE_OF_CONDUCT.md).
