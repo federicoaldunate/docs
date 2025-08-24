@@ -53,7 +53,11 @@
           {
             "group": "Blog",
             "pages": [
-              "blog/introduction"
+              "blog/introduction",
+              "blog/first-article",
+              "blog/second-article",
+              "blog/third-article",
+              "blog/last-article"
             ]
           }
         ]
