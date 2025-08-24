@@ -66,19 +66,14 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Repository",
+          "href": "https://https://github.com/windmotion-io/black-lab",
+          "icon": "github"
         },
         {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Windmotion",
+          "href": "https://windmotion.io",
+          "icon": "heart"
         }
       ]
     }
@@ -91,13 +86,13 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "https://github.com/windmotion-io/black-lab/issues"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Repository",
+      "href": "https://github.com/windmotion-io/black-lab"
     }
   },
   "contextual": {
@@ -114,9 +109,8 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "github": "https://github.com/windmotion-io/",
+      "linkedin": "https://linkedin.com/company/windmotion-io"
     }
   }
 }
