@@ -48,21 +48,12 @@
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Blog",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Blog",
             "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "blog/introduction"
             ]
           }
         ]
