@@ -1,80 +1,123 @@
 ---
 title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+description: "Install BlackLab WAF fast and easy"
 ---
 
 ## Get started in three steps
 
-Get your documentation site running locally and make your first customization.
+Get your protection ready in 3 easy steps.
 
-### Step 1: Set up your local environment
+---
+
+### Step 1: Install the gem
 
 <AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
+  <Accordion icon="copy" title="Install via the Gemfile">
+    Add this line to your application's **Gemfile**:
     
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
+    ```ruby
+    gem "black_lab"
+    ```
+    
+    Then run:
+    
+    ```bash
+    bundle install
+    ```
   </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
+
+  <Accordion icon="rectangle-terminal" title="Require in your Rack/Rails app">
+    Add BlackLab to your **middleware stack**. For example, in `config.ru`:
     
-    <Tip>Your preview updates automatically as you edit files.</Tip>
+    ```ruby
+    require "black_lab"
+
+    use BlackLab::Middleware
+    run Rails.application
+    ```
   </Accordion>
 </AccordionGroup>
 
-### Step 2: Deploy your changes
+---
+
+### Step 2: Configure BlackLab
 
 <AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
+  <Accordion icon="gear" title="Create an initializer">
+    Create a file at `config/initializers/black_lab.rb` and configure it:
     
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+    ```ruby
+    BlackLab.configure do |config|
+      config.block_message = "Blocked by BlackLab WAF"
+      config.block_duration = 3600 # seconds to block an IP/user in cache
+      config.block_callback = ->(request) { puts "Blocked #{request.ip}" }
+      config.callback_threshold = 15 # points threshold to trigger callback
+      config.cache_store = Rails.cache # or any object responding to #write/#read
+      config.plugins = [
+        BlackLab::Plugins::SqliPlugin.new(weight: 3),
+        BlackLab::Plugins::XssPlugin.new(weight: 3),
+        BlackLab::Plugins::PathTraversalPlugin.new(weight: 3),
+        # BlackLab::Plugins::LfiPlugin.new(weight: 1),
+        # BlackLab::Plugins::RfiPlugin.new(weight: 2)
+      ]
+    end
+    ```
+    
+    <Tip>
+      Only enable the plugins you need — keep it lightweight!
+    </Tip>
+  </Accordion>
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
+  <Accordion icon="palette" title="Customize behavior">
+    You can tweak:
+    
+    - **block_message** → What users see when blocked  
+    - **block_duration** → How long to block IPs  
+    - **plugins** → Choose detection plugins (SQLi, XSS, Path traversal, etc.)  
+    - **callback_threshold** → How many points until an IP is blocked  
+    
+    <Tip>
+      Start with defaults, then tighten rules based on your app’s needs.
+    </Tip>
   </Accordion>
 </AccordionGroup>
+
+---
 
 ### Step 3: Go live
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
+<Accordion icon="rocket" title="Deploy with protection">
+  1. Commit your changes.  
+  2. Deploy your app as usual.  
+  3. BlackLab WAF will automatically protect your endpoints against SQLi, XSS, and more!
 </Accordion>
+
+---
 
 ## Next steps
 
-Now that you have your docs running, explore these key features:
+Now that BlackLab WAF is running, explore these key features:
 
 <CardGroup cols={2}>
 
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
+<Card title="Add more plugins" icon="shield" href="/plugins/overview">
+  Extend BlackLab with additional security plugins.
 </Card>
 
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
+<Card title="Customize block actions" icon="code" href="/guides/block-callbacks">
+  Run custom logic when a request is blocked (e.g., alerting).
 </Card>
 
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
+<Card title="Tuning thresholds" icon="sliders" href="/guides/tuning">
+  Balance security and usability by adjusting thresholds.
 </Card>
 
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
+<Card title="Monitoring & logs" icon="file-text" href="/guides/logging">
+  Learn how to monitor and analyze blocked requests.
 </Card>
 
 </CardGroup>
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  **Need help?** Create an issue in our [Github repository](https://github.com/windmotion-io/black-lab/issues).
 </Note>
