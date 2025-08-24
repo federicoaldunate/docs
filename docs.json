@@ -22,19 +22,20 @@
             ]
           },
           {
-            "group": "Customization",
+            "group": "Plugins",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "plugins/introduction",
+              "plugins/sqli",
+              "plugins/xss",
+              "plugins/lfi",
+              "plugins/rfi",
+              "plugins/path-traversal"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Write your own plugin",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "plugins/write-your-own"
             ]
           }
         ]
