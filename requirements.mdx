@@ -1,0 +1,43 @@
+---
+title: 'Requirements'
+description: 'All the requirements for BlackLab WAF'
+---
+
+<Info>
+  **Prerequisites**:
+  - Ruby **2.5 or higher**
+  - Rack **1.0 or higher**
+</Info>
+
+BlackLab WAF is a **Rack middleware**, which means it plugs into the Ruby web server interface.  
+If you are using **Rails**, **Sinatra**, or any other Rack-based framework, you already meet this requirement.  
+
+---
+
+## What is Rack?
+
+Rack is a minimal interface between **Ruby web servers** and **Ruby web applications**.  
+It provides a consistent API so middleware like **BlackLab** can inspect and filter incoming requests before they reach your app.  
+
+For example, in a `config.ru` file:
+
+```ruby
+require "rack"
+require "black_lab"
+
+use BlackLab::Middleware
+run MyApp
+```
+
+This ensures all HTTP requests go through BlackLab WAF before being handled by your app.
+
+## Supported frameworks
+
+BlackLab works out-of-the-box with any Rack-compatible framework, such as:
+
+- Ruby on Rails
+- Sinatra
+- Hanami
+- Padrino
+
+Or plain Rack apps
