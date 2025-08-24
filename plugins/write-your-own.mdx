@@ -1,35 +1,26 @@
 ---
-title: 'Code blocks'
-description: 'Display inline code and code blocks'
-icon: 'code'
+title: 'Custom Plugins'
+description: 'Learn how to create your own BlackLab WAF plugin'
+icon: 'wrench'
 ---
 
-## Inline code
+## Write Your Own Plugin
 
-To denote a `word` or `phrase` as code, enclose it in backticks (`).
+BlackLab WAF allows you to create **custom plugins** to detect specific attack patterns or application-specific threats.  
 
+You can define your own rules, assign weights, and decide what happens when a request exceeds your threshold.  
+
+---
+
+## Example
+
+A custom plugin could, for instance, block requests containing certain headers or patterns unique to your app.  
+The plugin would be added to your configuration like any built-in plugin:
+
+```ruby
+BlackLab.configure do |config|
+  config.plugins = [
+    MyCustomPlugin.new(weight: 2)
+  ]
+end
 ```
-To denote a `word` or `phrase` as code, enclose it in backticks (`).
-```
-
-## Code blocks
-
-Use [fenced code blocks](https://www.markdownguide.org/extended-syntax/#fenced-code-blocks) by enclosing code in three backticks and follow the leading ticks with the programming language of your snippet to get syntax highlighting. Optionally, you can also write the name of your code after the programming language.
-
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
-```
-
-````md
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
-```
-````

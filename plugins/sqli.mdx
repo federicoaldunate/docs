@@ -1,59 +1,37 @@
 ---
-title: 'Images and embeds'
-description: 'Add image, video, and other HTML elements'
-icon: 'image'
+title: 'SQL Injection (SQLi)'
+description: 'Learn what SQL Injection is and how BlackLab WAF protects against it'
+icon: 'database'
 ---
 
-<img
-  style={{ borderRadius: '0.5rem' }}
-  src="https://mintlify-assets.b-cdn.net/bigbend.jpg"
-/>
+SQL Injection (**SQLi**) is a vulnerability where an attacker injects malicious SQL code into your queries, potentially exposing or modifying your database.
 
-## Image
+---
 
-### Using Markdown
+## Example attack
 
-The [markdown syntax](https://www.markdownguide.org/basic-syntax/#images) lets you add images using the following code
-
-```md
-![title](/path/image.jpg)
+```http
+GET /users?id=1 OR 1=1
 ```
+Without proper protection, this could return all users or allow the attacker to modify data.
 
-Note that the image file size must be less than 5MB. Otherwise, we recommend hosting on a service like [Cloudinary](https://cloudinary.com/) or [S3](https://aws.amazon.com/s3/). You can then use that URL and embed.
+How BlackLab helps
+BlackLab’s SQLi plugin scans incoming requests for patterns like:
 
-### Using embeds
+Suspicious SQL keywords (SELECT, UNION, DROP, etc.)
 
-To get more customizability with images, you can also use [embeds](/writing-content/embed) to add images
+Tautologies `(OR 1=1)`
 
-```html
-<img height="200" src="/path/image.jpg" />
+Comment-based injections `(--, #)`
+
+Example configuration:
+
+```ruby
+
+BlackLab.configure do |config|
+  config.plugins = [
+    BlackLab::Plugins::SqliPlugin.new(weight: 3)
+  ]
+end
 ```
-
-## Embeds and HTML elements
-
-<iframe
-  width="560"
-  height="315"
-  src="https://www.youtube.com/embed/4KzFe50RQkQ"
-  title="YouTube video player"
-  frameBorder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  allowFullScreen
-  style={{ width: '100%', borderRadius: '0.5rem' }}
-></iframe>
-
-<br />
-
-<Tip>
-
-Mintlify supports [HTML tags in Markdown](https://www.markdownguide.org/basic-syntax/#html). This is helpful if you prefer HTML tags to Markdown syntax, and lets you create documentation with infinite flexibility.
-
-</Tip>
-
-### iFrames
-
-Loads another HTML page within the document. Most commonly used for embedding videos.
-
-```html
-<iframe src="https://www.youtube.com/embed/4KzFe50RQkQ"> </iframe>
-```
+<Note> SQL Injection is one of the most dangerous attacks. BlackLab blocks malicious SQL patterns before they reach your database. </Note> 

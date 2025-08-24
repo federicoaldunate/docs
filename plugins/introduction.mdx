@@ -1,33 +1,67 @@
 ---
-title: 'BLOG?'
-description: 'Example section for showcasing API endpoints'
+title: 'Introduction'
+description: 'Introduction to plugins'
 ---
 
 <Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
+  In BlackLab WAF, **plugins are the core detection units**.  
+  Each plugin focuses on identifying a specific type of attack or malicious behavior in incoming requests.
 </Note>
 
-## Welcome
+## What is a Plugin?
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+A **plugin** in BlackLab WAF represents a self-contained detection rule or module.  
+It analyzes HTTP requests and assigns a **score (or weight)** when suspicious patterns are found.  
+When the accumulated score of a request exceeds the configured **threshold**, BlackLab takes action (block, log, or run a custom callback).  
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+---
 
-## Authentication
+## Examples of Plugins
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+- **SQL Injection Plugin (`SqliPlugin`)**  
+  Detects attempts to inject SQL commands into parameters, headers, or body.
 
-```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
-```
+- **Cross-Site Scripting Plugin (`XssPlugin`)**  
+  Identifies suspicious HTML or JavaScript injections.
+
+- **Path Traversal Plugin (`PathTraversalPlugin`)**  
+  Prevents attackers from accessing files outside the intended directories (e.g., `../../etc/passwd`).
+
+- **Local File Inclusion Plugin (`LfiPlugin`)**  
+  Detects attempts to include local files through crafted input.
+
+- **Remote File Inclusion Plugin (`RfiPlugin`)**  
+  Blocks attempts to load remote malicious scripts or files.
+
+---
+
+## How Plugins Work Together
+
+You can enable multiple plugins at the same time.  
+Each plugin adds **points** when it detects something malicious.  
+For example:
+
+```ruby
+BlackLab.configure do |config|
+  config.plugins = [
+    BlackLab::Plugins::SqliPlugin.new(weight: 3),
+    BlackLab::Plugins::XssPlugin.new(weight: 3),
+    BlackLab::Plugins::PathTraversalPlugin.new(weight: 2)
+  ]
+  config.callback_threshold = 5
+end
+In this setup:
+
+An SQLi attempt (+3) alone won’t block,
+
+But an SQLi (+3) combined with XSS (+3) = 6 points → exceeds threshold (5) → blocked.
+
+Why Plugins?
+Modular → Enable only what you need.
+
+Customizable → Adjust the weight per plugin to tune sensitivity.
+
+Extensible → You can create your own plugins for app-specific rules.
+
+Next steps
+<CardGroup cols={2}> <Card title="Available Plugins" icon="shield" href="/plugins/available"> Explore the built-in plugins included with BlackLab WAF. </Card> <Card title="Build Custom Plugins" icon="wrench" href="/plugins/custom"> Learn how to create your own plugins for custom attack detection. </Card> </CardGroup>
