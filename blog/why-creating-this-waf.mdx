@@ -1,0 +1,57 @@
+---
+title: 'Why creating BlackLab?'
+description: 'How hacking made me create the tool this vulnerable company needed and didn’t know.'
+---
+
+## The moment the idea came
+
+Some time ago, I stumbled into a fintech company worth millions.
+It ran on Rails, and I know Rails very well. I wasn’t supposed to be able to create an account in their enterprise software, but I could.
+And because I wasn’t supposed to be a user, their system trusted me more than it should.
+
+This happens often: developers assume “enterprise users” are safer, and so they relax controls.
+But that’s a mistake. The fact that I had an account made the whole system more vulnerable.
+
+From what I could tell, the company had a WAF in place, probably managed through their CDN.
+It did block some of my attacks. But here’s the issue: even though it blocked some things, I was still there, with a valid account, inside the system.
+That means the WAF wasn’t connected to the application itself. Engineers had no control, no way to react in real-time, and no visibility.
+Most likely, the WAF was something set up by DevOps, far away from the app logic.
+
+That was the moment I realized: this gap exists everywhere.
+Security is pushed out to CDNs and reverse proxies, but the people who actually build
+the app—the Rails engineers—are left with no control.
+
+## Why today’s WAFs are not enough
+
+Most modern WAFs live outside of the application. They sit at the CDN or load balancer level.
+They catch some obvious attacks, but they don’t know your app. They don’t integrate with your logic.
+And they don’t let your team take direct action.
+
+If an attacker manages to become a valid user, the WAF at the edge won’t know what to do.
+It will happily let them through as long as they don’t trigger the generic rules.
+That’s not good enough for enterprise SaaS or fintech systems, where an attacker inside the system can cause real damage.
+
+## Building a WAF next to the app
+
+I wanted to build something different: a WAF that runs inside the Rails stack, not outside of it.
+Something that lives next to the app it protects, with the same visibility and context as your own code.
+
+So I built BlackLab — a WAF as a Rack middleware.
+
+- It’s easy to set up: you just add it to your middleware stack.
+- It comes with plugins for common attack vectors like SQL injection, XSS, and path traversal.
+- And most importantly: it can trigger callbacks. If you want to block a user after a suspicious request, you can. If you want to send an alert, log them out, or flag them in your database, you can. It’s your app, your rules.
+
+This makes BlackLab more than a passive filter. It gives Rails engineers real control.
+You don’t need to wait on DevOps or depend on a third-party CDN.
+You protect the app where it matters most—inside the app itself.
+
+## The goal
+
+I didn’t build this for hobby projects. I built it for the kind of enterprise SaaS where one weak spot
+can cause serious problems. These companies need an extra layer of protection that lives with the app.
+
+The idea is simple: let the CDN WAF do its job at the edge, but give Rails engineers a second,
+smarter shield inside the application. One that you can extend, configure, and connect to your user model directly.
+
+That’s what BlackLab is for.

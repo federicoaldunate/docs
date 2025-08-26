@@ -1,0 +1,73 @@
+---
+title: 'Introducing BlackLab 0.1.0'
+description: 'A Rack-based WAF for Rails and Beyond'
+---
+
+Today I’m releasing BlackLab 0.1.0, an open-source Web Application Firewall (WAF) designed to live inside your app, not just at the edge.
+
+Most WAFs sit in front of your application, at the CDN or load balancer. That’s useful, but it’s also detached from the place where attacks really matter — your app logic, your users, your data.
+BlackLab is different: it runs as a Rack middleware, right inside your Rails (or any Rack-based) application.
+
+## Why another WAF?
+
+The idea for BlackLab came after I found myself inside a fintech system that was worth millions.
+I wasn’t supposed to be a user — but I could create an account anyway.
+Once I was in, their WAF at the CDN layer blocked some probes, but I was still there: a valid user, trusted by their system.
+
+And that’s the problem: a WAF outside your app has no context.
+It doesn’t know your user model, your sessions, your rules. It can’t block my account, trigger an alert, or log me out.
+It just sits there, filtering traffic with generic rules.
+
+So I built BlackLab to fill that gap: a WAF that Rails developers can actually control.
+
+
+## What’s in BlackLab 0.1.0?
+
+BlackLab 0.1.0 is the first public release. Here’s what it ships with:
+
+- Rack Middleware — drop it into your stack with use BlackLab::Middleware.
+- Configurable Callbacks — block users, send alerts, log incidents, trigger Slack messages… directly from your app.
+- Extensible Plugins — SQL injection, XSS, path traversal, local file inclusion (LFI), and remote file inclusion (RFI). Add or write your own.
+- Smart Blocking — block by IP, session, or user ID, with configurable duration and thresholds.
+- Rails-friendly Defaults — integrates with Rails.cache out of the box for tracking incidents.
+
+Example initializer:
+
+```ruby
+BlackLab.configure do |config|
+  config.block_message = "Blocked by BlackLab WAF"
+  config.block_duration = 3600
+  config.block_callback = ->(request) { puts "Blocked #{request.ip}" }
+  config.plugins = [
+    BlackLab::Plugins::SqliPlugin.new(weight: 3),
+    BlackLab::Plugins::XssPlugin.new(weight: 3),
+    BlackLab::Plugins::PathTraversalPlugin.new(weight: 3),
+  ]
+end
+```
+
+## Why inside the app?
+
+Running a WAF inside your app gives you context and control:
+- You can tie suspicious requests directly to your User model.
+- You can log them out or flag their account.
+- You can trigger your own incident response workflow — whether that’s Slack, PagerDuty, or custom dashboards.
+
+Instead of relying only on a CDN, you get a second, smarter shield that lives with your application.
+
+## What’s next?
+
+This is just 0.1.0 — a foundation to build on. Next releases will focus on:
+
+- More plugins (e.g., CSRF bypass detection, header validation).
+- Better developer ergonomics (Rails generators for setup, logging helpers).
+- Documentation on creating new plugins
+- Improve detection by using CRS from ModSecurity
+
+## Final thoughts
+
+CDN-based WAFs are useful, but they’re not enough on their own — especially for enterprise SaaS and fintech apps where one insider foothold can cause massive damage.
+BlackLab gives Rails engineers a way to defend their apps from inside the stack, with the same visibility and context as your own code.
+
+This is just the beginning.
+Welcome to BlackLab 0.1.0.

@@ -46,11 +46,8 @@
           {
             "group": "Blog",
             "pages": [
-              "blog/introduction",
-              "blog/first-article",
-              "blog/second-article",
-              "blog/third-article",
-              "blog/last-article"
+              "blog/why-creating-this-waf",
+              "blog/introducing-black-lab-0-1"
             ]
           }
         ]
